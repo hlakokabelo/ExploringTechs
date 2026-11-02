@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import scribe from "scribe.js-ocr";
 
@@ -8,24 +8,68 @@ const ScribeOCR: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fileType, setFileType] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
+  const [duration, setDuration] = useState<number | null>(null);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+  const runOCR = useCallback(async (file: File) => {
+    setIsLoading(true);
+    setDuration(null);
 
-    setText("");
-    setFileType(file.type);
-    setFileName(file.name);
+    const startTime = performance.now();
 
-    // Only generate a visual preview for images
-    if (file.type.startsWith("image/")) {
-      setImage(URL.createObjectURL(file));
-    } else {
-      setImage(null);
+    let doc: Awaited<ReturnType<typeof scribe.openDocument>> | undefined;
+
+    try {
+      doc = await scribe.openDocument([file]);
+
+      await doc.recognize({ langs: ["eng"] });
+
+      const exported = await doc.exportData("txt");
+
+      setText(
+        typeof exported === "string" && exported.trim()
+          ? exported
+          : "No text extracted.",
+      );
+    } catch (error) {
+      console.error("Scribe OCR Error:", error);
+      setText("Error extracting text. Please try again.");
+    } finally {
+      try {
+        await doc?.close();
+      } catch (error) {
+        console.error("Document cleanup error:", error);
+      }
+
+      try {
+        await scribe.terminate();
+      } catch (error) {
+        console.error("Scribe termination error:", error);
+      }
+
+      const endTime = performance.now();
+
+      setDuration(endTime - startTime);
+      setIsLoading(false);
     }
-
-    runOCR(file);
   }, []);
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
+
+      setText("");
+      setFileType(file.type);
+      setFileName(file.name);
+
+      setImage(
+        file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+      );
+
+      runOCR(file);
+    },
+    [runOCR],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -34,29 +78,14 @@ const ScribeOCR: React.FC = () => {
       "application/pdf": [".pdf"],
     },
     multiple: false,
+    disabled: isLoading,
   });
 
-  const runOCR = async (file: File) => {
-    setIsLoading(true);
-
-    try {
-      const doc = await scribe.openDocument([file]);
-      await doc.recognize({ langs: ["eng"] });
-
-      const exported = await doc.exportData("txt");
-      setText(typeof exported === "string" ? exported : "No text extracted.");
-
-      await doc.close();
-    } catch (error) {
-      console.error("Scribe OCR Error:", error);
-      setText("Error extracting text. Please check the console for details.");
-    } finally {
-      setIsLoading(false);
-      // Always release workers & memory between runs
-      await scribe.terminate();
-    }
-  };
-
+  useEffect(() => {
+    return () => {
+      if (image) URL.revokeObjectURL(image);
+    };
+  }, [image]);
   return (
     <div className="method-container">
       <h2>Scribe.js</h2>
@@ -92,6 +121,13 @@ const ScribeOCR: React.FC = () => {
           <p className="loading-note">
             Scribe.js is analyzing the file. PDFs may take a moment.
           </p>
+        </div>
+      )}
+
+      {duration !== null && (
+        <div className="processing-stats">
+          <span>⏱ Processing time </span>
+          <strong>{(duration / 1000).toFixed(2)} seconds</strong>
         </div>
       )}
 
