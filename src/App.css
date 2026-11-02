@@ -1,0 +1,141 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    Arial,
+    sans-serif;
+  background: #f5f5f7;
+  color: #111827;
+}
+
+/* ---------- Home ---------- */
+.home {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+.home-hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.home-hero h1 {
+  font-size: 2.2rem;
+  margin: 0 0 12px;
+}
+.home-hero p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.experiment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.experiment-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    border-color 0.15s;
+}
+
+.experiment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border-color: #2563eb;
+}
+
+.experiment-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+.experiment-card h2 {
+  font-size: 1.15rem;
+  margin: 0 0 8px;
+}
+.experiment-card p {
+  color: #4b5563;
+  font-size: 0.92rem;
+  margin: 0 0 16px;
+  flex: 1;
+}
+
+.experiment-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.experiment-tags span {
+  font-size: 0.72rem;
+  background: #eef2ff;
+  color: #3730a3;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* ---------- Experiment layout ---------- */
+.experiment-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.experiment-nav a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.experiment-nav a:hover {
+  text-decoration: underline;
+}
+.experiment-title {
+  color: #111827;
+  font-weight: 600;
+}
+
+.experiment-body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.page-loading {
+  text-align: center;
+  padding: 60px;
+  color: #6b7280;
+}
+
+/* ---------- 404 ---------- */
+.not-found {
+  text-align: center;
+  padding: 80px 24px;
+}
+.not-found h1 {
+  font-size: 3rem;
+  margin: 0 0 8px;
+}
+.not-found a {
+  color: #2563eb;
+  text-decoration: none;
+}
