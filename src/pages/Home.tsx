@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="home">
       <header className="home-hero">
-        <h1>🧪 Nerdspcae - Exploring Techs</h1>
+        <h1>🧪 Exploring Techs</h1>
         <p>
           A playground for trying libraries in the browser. Pick a tool below.
         </p>

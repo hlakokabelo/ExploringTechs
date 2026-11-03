@@ -1,14 +1,14 @@
-# 🧪 Nerdspace
+# 🧪 ExploringTechs
 
 ### Curiosity lives here.
 
-🌐 **Live Demo:** [nerdspace.vercel.app](https://nerdspace.vercel.app)
+🌐 **Live Demo:** [ExploringTechs.vercel.app](https://ExploringTechs.vercel.app)
 
-Nerdspace is a growing collection of browser-based technology experiments, interactive tools, and interesting things built with code.
+ExploringTechs is a growing collection of browser-based technology experiments, interactive tools, and interesting things built with code.
 
-Inspired by [iLovePDF](https://www.ilovepdf.com/), Nerdspace brings independent tools together under one roof. Each experiment has its own route, components, and dependencies, while sharing a common application shell.
+Inspired by [iLovePDF](https://www.ilovepdf.com/), ExploringTechs brings independent tools together under one roof. Each experiment has its own route, components, and dependencies, while sharing a common application shell.
 
-Whether it's exploring OCR engines, experimenting with document processing, or trying out a new technology, Nerdspace provides a space to build, test, compare, and learn.
+Whether it's exploring OCR engines, experimenting with document processing, or trying out a new technology, ExploringTechs provides a space to build, test, compare, and learn.
 
 The project uses a central registry to manage experiments, making it easy to add or remove tools without modifying the application's routing configuration.
 
