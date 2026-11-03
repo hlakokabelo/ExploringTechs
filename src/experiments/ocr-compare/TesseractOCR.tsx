@@ -1,34 +1,30 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import Tesseract from "tesseract.js";
+import { useOCRStore } from "./store/ocrStore";
 
 const TesseractOCR: React.FC = () => {
-  const [image, setImage] = useState<string | null>(null);
-  const [text, setText] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0);
+  const imageUrl = useOCRStore((s) => s.imageUrl);
+  const text = useOCRStore((s) => s.text);
+  const isLoading = useOCRStore((s) => s.isLoading);
+  const progress = useOCRStore((s) => s.progress);
+  const error = useOCRStore((s) => s.error);
+  const duration = useOCRStore((s) => s.duration);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+  const setImage = useOCRStore((s) => s.setImage);
+  const setText = useOCRStore((s) => s.setText);
+  const setDuration = useOCRStore((s) => s.setDuration);
 
-    setImage(URL.createObjectURL(file));
-    setText("");
-    runOCR(file);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      // Images ONLY — no PDF allowed here
-      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp"],
-    },
-    multiple: false,
-  });
+  const setLoading = useOCRStore((s) => s.setLoading);
+  const setProgress = useOCRStore((s) => s.setProgress);
+  const setError = useOCRStore((s) => s.setError);
 
   const runOCR = async (file: File) => {
-    setIsLoading(true);
+    setLoading(true);
+    setDuration(null);
     setProgress(0);
+    setError(null);
+    const startTime = performance.now();
 
     try {
       const result = await Tesseract.recognize(file, "eng", {
@@ -39,14 +35,33 @@ const TesseractOCR: React.FC = () => {
         },
       });
       setText(result.data.text);
-    } catch (error) {
-      console.error("Tesseract OCR Error:", error);
-      setText("Error extracting text. Please try again.");
+    } catch (err) {
+      console.error("Tesseract OCR Error:", err);
+      setError("Error extracting text. Please try again.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
       setProgress(0);
+      setDuration(performance.now() - startTime);
     }
   };
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
+      setImage(file);
+      runOCR(file);
+    },
+    [setImage],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp"],
+    },
+    multiple: false,
+  });
 
   return (
     <div className="method-container">
@@ -65,15 +80,23 @@ const TesseractOCR: React.FC = () => {
         )}
       </div>
 
-      {image && (
+      {imageUrl && (
         <div className="preview">
-          <img src={image} alt="Preview" />
+          <img src={imageUrl} alt="Preview" />
         </div>
       )}
 
       {isLoading && (
         <div className="loading">
           <p>Processing... {progress}%</p>
+        </div>
+      )}
+
+      {error && <p className="error">{error}</p>}
+      {duration !== null && (
+        <div className="processing-stats">
+          <span>⏱ Processing time </span>
+          <strong>{(duration / 1000).toFixed(2)} seconds</strong>
         </div>
       )}
 

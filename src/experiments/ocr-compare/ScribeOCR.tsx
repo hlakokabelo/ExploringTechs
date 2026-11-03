@@ -1,74 +1,74 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import scribe from "scribe.js-ocr";
+import { useScribeStore } from "./store/scribeStore";
 
 const ScribeOCR: React.FC = () => {
-  const [image, setImage] = useState<string | null>(null);
-  const [text, setText] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [fileType, setFileType] = useState<string>("");
-  const [fileName, setFileName] = useState<string>("");
-  const [duration, setDuration] = useState<number | null>(null);
+  const imageUrl = useScribeStore((s) => s.imageUrl);
+  const fileType = useScribeStore((s) => s.fileType);
+  const fileName = useScribeStore((s) => s.fileName);
+  const text = useScribeStore((s) => s.text);
+  const isLoading = useScribeStore((s) => s.isLoading);
+  const duration = useScribeStore((s) => s.duration);
+  const error = useScribeStore((s) => s.error);
 
-  const runOCR = useCallback(async (file: File) => {
-    setIsLoading(true);
-    setDuration(null);
+  const setFile = useScribeStore((s) => s.setFile);
+  const setText = useScribeStore((s) => s.setText);
+  const setLoading = useScribeStore((s) => s.setLoading);
+  const setDuration = useScribeStore((s) => s.setDuration);
+  const setError = useScribeStore((s) => s.setError);
 
-    const startTime = performance.now();
+  const runOCR = useCallback(
+    async (file: File) => {
+      setLoading(true);
+      setDuration(null);
+      setError(null);
 
-    let doc: Awaited<ReturnType<typeof scribe.openDocument>> | undefined;
+      const startTime = performance.now();
 
-    try {
-      doc = await scribe.openDocument([file]);
-
-      await doc.recognize({ langs: ["eng"] });
-
-      const exported = await doc.exportData("txt");
-
-      setText(
-        typeof exported === "string" && exported.trim()
-          ? exported
-          : "No text extracted.",
-      );
-    } catch (error) {
-      console.error("Scribe OCR Error:", error);
-      setText("Error extracting text. Please try again.");
-    } finally {
-      try {
-        await doc?.close();
-      } catch (error) {
-        console.error("Document cleanup error:", error);
-      }
+      let doc: Awaited<ReturnType<typeof scribe.openDocument>> | undefined;
 
       try {
-        await scribe.terminate();
-      } catch (error) {
-        console.error("Scribe termination error:", error);
+        doc = await scribe.openDocument([file]);
+        await doc.recognize({ langs: ["eng"] });
+
+        const exported = await doc.exportData("txt");
+        setText(
+          typeof exported === "string" && exported.trim()
+            ? exported
+            : "No text extracted.",
+        );
+      } catch (err) {
+        console.error("Scribe OCR Error:", err);
+        setError("Error extracting text. Please try again.");
+      } finally {
+        try {
+          await doc?.close();
+        } catch (err) {
+          console.error("Document cleanup error:", err);
+        }
+        try {
+          await scribe.terminate();
+        } catch (err) {
+          console.error("Scribe termination error:", err);
+        }
+
+        setDuration(performance.now() - startTime);
+        setLoading(false);
       }
-
-      const endTime = performance.now();
-
-      setDuration(endTime - startTime);
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [setText, setLoading, setDuration, setError],
+  );
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (!file) return;
 
-      setText("");
-      setFileType(file.type);
-      setFileName(file.name);
-
-      setImage(
-        file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
-      );
-
+      setFile(file);
       runOCR(file);
     },
-    [runOCR],
+    [setFile, runOCR],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -81,11 +81,6 @@ const ScribeOCR: React.FC = () => {
     disabled: isLoading,
   });
 
-  useEffect(() => {
-    return () => {
-      if (image) URL.revokeObjectURL(image);
-    };
-  }, [image]);
   return (
     <div className="method-container">
       <h2>Scribe.js</h2>
@@ -105,9 +100,9 @@ const ScribeOCR: React.FC = () => {
         )}
       </div>
 
-      {image && (
+      {imageUrl && (
         <div className="preview">
-          <img src={image} alt="Preview" />
+          <img src={imageUrl} alt="Preview" />
         </div>
       )}
 
@@ -130,6 +125,8 @@ const ScribeOCR: React.FC = () => {
           <strong>{(duration / 1000).toFixed(2)} seconds</strong>
         </div>
       )}
+
+      {error && <p className="error">{error}</p>}
 
       {text && (
         <div className="output">
