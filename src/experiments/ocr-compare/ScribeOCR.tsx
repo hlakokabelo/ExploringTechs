@@ -1,7 +1,9 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import scribe from "scribe.js-ocr";
+
 import { useScribeStore } from "./store/scribeStore";
+scribe.opt.workerN = 2;
 
 const ScribeOCR: React.FC = () => {
   const imageUrl = useScribeStore((s) => s.imageUrl);
@@ -29,10 +31,27 @@ const ScribeOCR: React.FC = () => {
       let doc: Awaited<ReturnType<typeof scribe.openDocument>> | undefined;
 
       try {
+        const timings: Record<string, number> = {};
+
+        let start = performance.now();
+
         doc = await scribe.openDocument([file]);
+
+        timings.openDocument = performance.now() - start;
+
+        start = performance.now();
+
         await doc.recognize({ langs: ["eng"] });
 
+        timings.recognize = performance.now() - start;
+
+        start = performance.now();
+
         const exported = await doc.exportData("txt");
+
+        timings.export = performance.now() - start;
+
+        console.table(timings);
         setText(
           typeof exported === "string" && exported.trim()
             ? exported
@@ -46,11 +65,6 @@ const ScribeOCR: React.FC = () => {
           await doc?.close();
         } catch (err) {
           console.error("Document cleanup error:", err);
-        }
-        try {
-          await scribe.terminate();
-        } catch (err) {
-          console.error("Scribe termination error:", err);
         }
 
         setDuration(performance.now() - startTime);
