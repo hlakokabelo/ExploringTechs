@@ -1,7 +1,7 @@
 import { lazy, type LazyExoticComponent, type ComponentType } from "react";
 
-export interface Experiment {
-  /** URL slug — also the folder name under src/experiments/ */
+export interface tech {
+  /** URL slug — also the folder name under src/techs/ */
   id: string;
   title: string;
   description: string;
@@ -13,7 +13,7 @@ export interface Experiment {
   component: LazyExoticComponent<ComponentType>;
 }
 
-export const experiments: Experiment[] = [
+export const techs: tech[] = [
   {
     id: "ocr-compare",
     title: "OCR Comparison",
@@ -23,7 +23,7 @@ export const experiments: Experiment[] = [
     tags: ["tesseract.js", "scribe.js", "pdf", "drag & drop"],
     component: lazy(() => import("./ocr-compare")),
   },
-  // Add more experiments here — one entry per folder below.
+  // Add more techs here — one entry per folder below.
   // {
   //   id: 'barcode-scanner',
   //   title: 'Barcode Scanner',

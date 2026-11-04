@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { experiments } from "../experiments";
+import { techs } from "../techs";
 
 export default function Home() {
   return (
@@ -11,13 +11,13 @@ export default function Home() {
         </p>
       </header>
 
-      <div className="experiment-grid">
-        {experiments.map((exp) => (
-          <Link key={exp.id} to={`/${exp.id}`} className="experiment-card">
-            <div className="experiment-icon">{exp.icon}</div>
+      <div className="tech-grid">
+        {techs.map((exp) => (
+          <Link key={exp.id} to={`/${exp.id}`} className="tech-card">
+            <div className="tech-icon">{exp.icon}</div>
             <h2>{exp.title}</h2>
             <p>{exp.description}</p>
-            <div className="experiment-tags">
+            <div className="tech-tags">
               {exp.tags.map((tag) => (
                 <span key={tag}>{tag}</span>
               ))}

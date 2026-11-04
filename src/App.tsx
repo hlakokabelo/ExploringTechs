@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense } from "react";
-import { experiments } from "./experiments";
+import { techs } from "./techs";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound.tsx";
-import { ExperimentLayout } from "./shared/ExperimentLayout";
+import { TechLayout } from "./shared/TechLayout.tsx";
 import "./App.css";
 export default function App() {
   return (
@@ -11,22 +11,20 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
 
-        {experiments.map((exp) => {
+        {techs.map((exp) => {
           const Component = exp.component;
           return (
             <Route
               key={exp.id}
               path={`/${exp.id}`}
               element={
-                <ExperimentLayout title={exp.title} icon={exp.icon}>
+                <TechLayout title={exp.title} icon={exp.icon}>
                   <Suspense
-                    fallback={
-                      <p className="page-loading">Loading experiment…</p>
-                    }
+                    fallback={<p className="page-loading">Loading tech…</p>}
                   >
                     <Component />
                   </Suspense>
-                </ExperimentLayout>
+                </TechLayout>
               }
             />
           );

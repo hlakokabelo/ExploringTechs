@@ -34,13 +34,13 @@ body {
   font-size: 1.05rem;
 }
 
-.experiment-grid {
+.tech-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
 }
 
-.experiment-card {
+.tech-card {
   display: flex;
   flex-direction: column;
   padding: 24px;
@@ -55,33 +55,33 @@ body {
     border-color 0.15s;
 }
 
-.experiment-card:hover {
+.tech-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
   border-color: #2563eb;
 }
 
-.experiment-icon {
+.tech-icon {
   font-size: 2.2rem;
   margin-bottom: 12px;
 }
-.experiment-card h2 {
+.tech-card h2 {
   font-size: 1.15rem;
   margin: 0 0 8px;
 }
-.experiment-card p {
+.tech-card p {
   color: #4b5563;
   font-size: 0.92rem;
   margin: 0 0 16px;
   flex: 1;
 }
 
-.experiment-tags {
+.tech-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
-.experiment-tags span {
+.tech-tags span {
   font-size: 0.72rem;
   background: #eef2ff;
   color: #3730a3;
@@ -89,8 +89,8 @@ body {
   border-radius: 999px;
 }
 
-/* ---------- Experiment layout ---------- */
-.experiment-nav {
+/* ---------- tech layout ---------- */
+.tech-nav {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -100,21 +100,21 @@ body {
   font-size: 0.95rem;
 }
 
-.experiment-nav a {
+.tech-nav a {
   color: #2563eb;
   text-decoration: none;
   font-weight: 500;
 }
 
-.experiment-nav a:hover {
+.tech-nav a:hover {
   text-decoration: underline;
 }
-.experiment-title {
+.tech-title {
   color: #111827;
   font-weight: 600;
 }
 
-.experiment-body {
+.tech-body {
   max-width: 900px;
   margin: 0 auto;
   padding: 32px 24px;
